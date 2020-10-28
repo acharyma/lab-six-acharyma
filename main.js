@@ -1,8 +1,6 @@
 import AreaChart from './AreaChart.js';
 import StackedAreaChart from './StackedAreaChart.js';
-
-
-
+//GitHub Pages Fix
 
 d3.csv('unemployment.csv', d3.autoType).then(data=>{
     console.log(data);
