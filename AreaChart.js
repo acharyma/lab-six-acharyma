@@ -1,3 +1,6 @@
+const listeners = { brushed: null };
+
+
 // input: selector for a chart container e.g., ".chart"
 export default function AreaChart(container){
 
@@ -40,6 +43,25 @@ export default function AreaChart(container){
     .y0(yScale(0) + margin.top)
     .y1((d) => yScale(d.total) + margin.top);
 
+
+    const brush = d3
+    .brushX()
+    .extent([
+      [margin.left, margin.top],
+      [width + margin.left, height + margin.top],
+    ])
+    .on("brush", brushed);
+
+    graph.append("g").attr("class", "brush").call(brush);
+
+    function brushed(event) {
+        if (event.selection) {
+        console.log("brushed", event.selection);
+        const select = event.selection.map((d) => d - margin.left);
+        listeners["brushed"](select.map(xScale.invert));
+        }
+    }
+
 	function update(data){ 
         console.log(data.map((d) => d.total))
 
@@ -51,9 +73,14 @@ export default function AreaChart(container){
         yAxisUp.call(yAxis);
 
         path.datum(data).attr("fill", "orange").attr("d", area);
-	}
+    }
+    
+    function on(event, listener) {
+        listeners[event] = listener;
+    }
 
 	return {
-		update // ES6 shorthand for "update": update
+        update, // ES6 shorthand for "update": update
+        on,
 	};
 }
